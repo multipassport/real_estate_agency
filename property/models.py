@@ -5,10 +5,12 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Flat(models.Model):
+    # flat_owner = models.ManyToManyField(Owner, related_name='flats',
+    #     verbose_name='Владелец')
     owner = models.CharField('ФИО владельца', max_length=200)
     owners_phonenumber = models.CharField('Номер владельца', max_length=20)
-    owner_pure_phone = PhoneNumberField('Номер владельца', max_length=20,
-        blank=True)
+    owner_pure_phone = PhoneNumberField('Нормализованный номер владельца',
+        max_length=20, blank=True)
     created_at = models.DateTimeField(
         'Когда создано объявление',
         default=timezone.now,
@@ -60,11 +62,17 @@ class Flat(models.Model):
 
 
 class Complaint(models.Model):
-    author = models.ForeignKey(User, related_name='complaints', on_delete=models.CASCADE,
-        verbose_name='Кто Жаловался:')
-    flat = models.ForeignKey(Flat, related_name='complaints', on_delete=models.CASCADE,
-        verbose_name='Квартира, на которую пожаловались:')
+    author = models.ForeignKey(User, related_name='complaints',
+        on_delete=models.CASCADE, verbose_name='Кто Жаловался')
+    flat = models.ForeignKey(Flat, related_name='complaints',
+        on_delete=models.CASCADE, verbose_name='Квартира, на которую пожаловались')
     text = models.TextField('Текст Жалобы')
 
 
-        
+class Owner(models.Model):
+    full_name = models.CharField('ФИО владельца', max_length=200, db_index=True)
+    phonenumber = models.CharField('Номер владельца', max_length=20)
+    pure_phone = PhoneNumberField('Нормализованный номер владельца',
+        max_length=20, blank=True)
+    owned_flats = models.ManyToManyField(Flat, related_name='flat_owners',
+        verbose_name='Квартиры в собственности')

@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import Flat, Complaint
+from .models import Flat, Complaint, Owner
 
-class RealtorAdmin(admin.ModelAdmin):
+class FlatAdmin(admin.ModelAdmin):
     search_fields = ('town', 'address', 'owner')
     readonly_fields = ('created_at',)
     list_display = ('address', 'price', 'new_building', 'construction_year',
@@ -16,5 +16,11 @@ class ComplaintAdmin(admin.ModelAdmin):
     raw_id_fields = ('author', 'flat',)
 
 
-admin.site.register(Flat, RealtorAdmin)
+class OwnerAdmin(admin.ModelAdmin):
+    list_display = ('full_name',)
+    raw_id_fields = ('owned_flats',)
+
+
+admin.site.register(Flat, FlatAdmin)
 admin.site.register(Complaint, ComplaintAdmin)
+admin.site.register(Owner, OwnerAdmin)
